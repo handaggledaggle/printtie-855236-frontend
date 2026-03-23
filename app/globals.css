@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pt-primary: #0891b2;
+  --pt-secondary: #22d3ee;
+  --pt-cta: #22c55e;
+  --pt-background: #ecfeff;
+  --pt-surface: #f8feff;
+  --pt-text-primary: #164e63;
+  --pt-text-secondary: #0f4b57;
+  --pt-border: #a5f3fc;
+  --pt-error: #ef4444;
+  --pt-success: #10b981;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--pt-background);
+  color: var(--pt-text-secondary);
+}
+
+@layer utilities {
+  .font-atkinson {
+    font-family: var(--font-atkinson), system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  }
+}
