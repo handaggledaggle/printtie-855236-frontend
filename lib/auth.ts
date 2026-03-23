@@ -27,11 +27,13 @@ export async function getCurrentUser(): Promise<User> {
 // provide client-side functions and also re-export them under the expected
 // names with a "Client" suffix and as the default-named client helpers.
 
-export async function getCurrentUserClient(): Promise<User> {
+export async function getCurrentUserClient(): Promise<User | { user?: any }> {
   try {
     const res = await fetch("/api/auth/me");
     if (!res.ok) return null;
-    return (await res.json()) as User;
+    const data = await res.json();
+    // API returns { user } on success
+    return data.user ? data.user as User : null;
   } catch (e) {
     return null;
   }
@@ -42,6 +44,55 @@ export async function signOutClient(): Promise<void> {
     await fetch("/api/auth/logout", { method: "POST" });
   } catch (e) {
     // ignore
+  }
+}
+
+// Implement client-side token helpers expected by API routes
+// These functions call the app's auth API endpoints to create/verify tokens.
+// They are thin wrappers so server code can import them by name.
+
+export async function signAccessToken(userId: string): Promise<string | null> {
+  try {
+    const res = await fetch("/api/auth/token/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, type: "access" }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.token ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function signRefreshToken(userId: string): Promise<string | null> {
+  try {
+    const res = await fetch("/api/auth/token/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, type: "refresh" }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.token ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function verifyToken(token: string): Promise<any | null> {
+  try {
+    const res = await fetch("/api/auth/token/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.payload ?? null;
+  } catch (e) {
+    return null;
   }
 }
 
